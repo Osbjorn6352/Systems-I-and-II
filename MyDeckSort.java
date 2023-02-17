@@ -17,7 +17,7 @@ public class MyDeckSort {
                 d.moveTopToBottom(); //move top to bottom regardless of whether you swap or not
             }
             d.moveTopToBottom(); //move top to bottom after every iteration of outer loop to continue after having found the min within inner loop
-            //StdOut.println(d.toString());
+            //StdOut.println(d.toString()); //println commented out, but useful in debugging
         }
     }
 
