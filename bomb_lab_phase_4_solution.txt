@@ -1,0 +1,141 @@
+(gdb) break phase_4
+Breakpoint 1 at 0x401046
+(gdb) disas phase_4
+Dump of assembler code for function phase_4:
+   0x0000000000401046 <+0>:     sub    $0x18,%rsp
+   0x000000000040104a <+4>:     lea    0xc(%rsp),%rcx
+   0x000000000040104f <+9>:     lea    0x8(%rsp),%rdx
+   0x0000000000401054 <+14>:    mov    $0x402765,%esi   
+   0x0000000000401059 <+19>:    mov    $0x0,%eax
+   0x000000000040105e <+24>:    callq  0x400c30 <__isoc99_sscanf@plt>
+   0x0000000000401063 <+29>:    cmp    $0x2,%eax
+   0x0000000000401066 <+32>:    jne    0x401074 <phase_4+46>
+   0x0000000000401068 <+34>:    mov    0xc(%rsp),%eax
+   0x000000000040106c <+38>:    sub    $0x2,%eax
+   0x000000000040106f <+41>:    cmp    $0x2,%eax
+   0x0000000000401072 <+44>:    jbe    0x401079 <phase_4+51>
+   0x0000000000401074 <+46>:    callq  0x401526 <explode_bomb>
+   0x0000000000401079 <+51>:    mov    0xc(%rsp),%esi
+   0x000000000040107d <+55>:    mov    $0x8,%edi
+   0x0000000000401082 <+60>:    callq  0x40100e <func4>
+   0x0000000000401087 <+65>:    cmp    %eax,0x8(%rsp)
+   0x000000000040108b <+69>:    jne    0x401092 <phase_4+76>
+   0x000000000040108d <+71>:    add    $0x18,%rsp
+   0x0000000000401091 <+75>:    retq
+   0x0000000000401092 <+76>:    callq  0x401526 <explode_bomb>
+   0x0000000000401097 <+81>:    jmp    0x40108d <phase_4+71>
+End of assembler dump.
+(gdb) break *0x0000000000401063
+Breakpoint 2 at 0x401063
+(gdb) run bombdif.txt
+Starting program: /home/osbe/bomb-lab/bomb3/bomb bombdif.txt
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Phase 1 defused. How about the next one?
+That's number 2.  Keep going!
+Halfway there!
+4 8
+
+Breakpoint 1, 0x0000000000401046 in phase_4 ()
+Missing separate debuginfos, use: yum debuginfo-install glibc-2.28-211.0.1.el8.x86_64
+(gdb) continue
+Continuing.
+
+Breakpoint 2, 0x0000000000401063 in phase_4 ()
+
+//Let's check to see what's stored in the %esi register before anything else
+(gdb) x/s 0x402765
+0x402765:       "%d %d"
+//So our input will be in the form of two numbers, just like phase_3!
+
+(gdb) print /d $eax
+$1 = 2
+(gdb) stepi
+0x0000000000401066 in phase_4 ()
+(gdb) stepi
+0x0000000000401068 in phase_4 ()
+(gdb) stepi
+0x000000000040106c in phase_4 ()
+(gdb) print /d $eax
+$2 = 8
+//Hmmmmm it seems like or second number is actually the one stored in this register, not the first
+//If we examine line <+38>, we can see that our first input -= 2 should be equal to 2 in line <+41>.
+//Let's try again
+
+(gdb) kill
+Kill the program being debugged? (y or n) y
+[Inferior 1 (process 2446868) killed]
+(gdb) run bombdif.txt
+Starting program: /home/osbe/bomb-lab/bomb3/bomb bombdif.txt
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Phase 1 defused. How about the next one?
+That's number 2.  Keep going!
+Halfway there!
+8 4
+
+Breakpoint 1, 0x0000000000401046 in phase_4 ()
+(gdb) continue
+Continuing.
+
+Breakpoint 2, 0x0000000000401063 in phase_4 ()
+(gdb) stepi
+0x0000000000401066 in phase_4 ()
+(gdb) print /d $eax
+$3 = 2
+(gdb) stepi
+0x0000000000401068 in phase_4 ()
+(gdb) stepi
+0x000000000040106c in phase_4 ()
+(gdb) print /d $eax
+$4 = 4
+(gdb) stepi
+0x000000000040106f in phase_4 ()
+(gdb) stepi
+0x0000000000401072 in phase_4 ()
+(gdb) stepi
+0x0000000000401079 in phase_4 ()
+(gdb) break 0x0000000000401087
+Function "0x0000000000401087" not defined.
+Make breakpoint pending on future shared library load? (y or [n]) n
+(gdb) break *0x0000000000401087
+Breakpoint 3 at 0x401087
+(gdb) continue
+Continuing.
+
+Breakpoint 3, 0x0000000000401087 in phase_4 ()
+(gdb) print /d $eax
+$5 = 216
+(gdb) print *(int *) ($rsp + 8)
+$6 = 8
+(gdb) kill
+Kill the program being debugged? (y or n) y
+[Inferior 1 (process 2447055) killed]
+(gdb) run bombdif.txt
+Starting program: /home/osbe/bomb-lab/bomb3/bomb bombdif.txt
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Phase 1 defused. How about the next one?
+That's number 2.  Keep going!
+Halfway there!
+216 4
+
+Breakpoint 1, 0x0000000000401046 in phase_4 ()
+(gdb) continue
+Continuing.
+
+Breakpoint 2, 0x0000000000401063 in phase_4 ()
+(gdb) continue
+Continuing.
+
+Breakpoint 3, 0x0000000000401087 in phase_4 ()
+(gdb) print /d $eax
+$7 = 216
+(gdb) print *(int *) ($rsp + 8)
+$8 = 216
+(gdb) break phase_5
+Breakpoint 4 at 0x401099
+(gdb) continue
+Continuing.
+So you got that one.  Try this one.
+//SUCCESS!! On to phase_5
