@@ -1,0 +1,143 @@
+(gdb) disas phase_3
+Dump of assembler code for function phase_3:
+   0x0000000000400f53 <+0>:     sub    $0x18,%rsp
+   0x0000000000400f57 <+4>:     lea    0x8(%rsp),%rcx
+   0x0000000000400f5c <+9>:     lea    0xc(%rsp),%rdx
+   0x0000000000400f61 <+14>:    mov    $0x402765,%esi
+   0x0000000000400f66 <+19>:    mov    $0x0,%eax
+   0x0000000000400f6b <+24>:    callq  0x400c30 <__isoc99_sscanf@plt>
+   0x0000000000400f70 <+29>:    cmp    $0x1,%eax                      
+   0x0000000000400f73 <+32>:    jle    0x400f8b <phase_3+56>          //ensuring %eax > 1
+   0x0000000000400f75 <+34>:    cmpl   $0x7,0xc(%rsp)                 //ensuring %eax < 7
+   0x0000000000400f7a <+39>:    ja     0x401002 <phase_3+175>         //blows up our bomb
+   0x0000000000400f80 <+45>:    mov    0xc(%rsp),%eax                 //sets %eax to our first arg
+   0x0000000000400f84 <+49>:    jmpq   *0x4024c0(,%rax,8)             
+   0x0000000000400f8b <+56>:    callq  0x401526 <explode_bomb>
+   0x0000000000400f90 <+61>:    jmp    0x400f75 <phase_3+34>
+   0x0000000000400f92 <+63>:    mov    $0x35a,%eax
+   0x0000000000400f97 <+68>:    jmp    0x400f9e <phase_3+75>
+   0x0000000000400f99 <+70>:    mov    $0x0,%eax
+   0x0000000000400f9e <+75>:    sub    $0x35c,%eax
+   0x0000000000400fa3 <+80>:    add    $0x3be,%eax
+   0x0000000000400fa8 <+85>:    sub    $0x17a,%eax
+   0x0000000000400fad <+90>:    add    $0x17a,%eax
+   0x0000000000400fb2 <+95>:    sub    $0x17a,%eax
+   0x0000000000400fb7 <+100>:   add    $0x17a,%eax
+   0x0000000000400fbc <+105>:   sub    $0x17a,%eax
+   0x0000000000400fc1 <+110>:   cmpl   $0x5,0xc(%rsp)
+   0x0000000000400fc6 <+115>:   jg     0x400fce <phase_3+123>
+   0x0000000000400fc8 <+117>:   cmp    %eax,0x8(%rsp)
+   0x0000000000400fcc <+121>:   je     0x400fd3 <phase_3+128>
+   0x0000000000400fce <+123>:   callq  0x401526 <explode_bomb>
+   0x0000000000400fd3 <+128>:   add    $0x18,%rsp
+   0x0000000000400fd7 <+132>:   retq
+   0x0000000000400fd8 <+133>:   mov    $0x0,%eax
+   0x0000000000400fdd <+138>:   jmp    0x400fa3 <phase_3+80>
+   0x0000000000400fdf <+140>:   mov    $0x0,%eax
+   0x0000000000400fe4 <+145>:   jmp    0x400fa8 <phase_3+85>
+   0x0000000000400fe6 <+147>:   mov    $0x0,%eax
+   0x0000000000400feb <+152>:   jmp    0x400fad <phase_3+90>
+   0x0000000000400fed <+154>:   mov    $0x0,%eax
+   0x0000000000400ff2 <+159>:   jmp    0x400fb2 <phase_3+95>
+   0x0000000000400ff4 <+161>:   mov    $0x0,%eax
+   0x0000000000400ff9 <+166>:   jmp    0x400fb7 <phase_3+100>
+   0x0000000000400ffb <+168>:   mov    $0x0,%eax
+   0x0000000000401000 <+173>:   jmp    0x400fbc <phase_3+105>
+   0x0000000000401002 <+175>:   callq  0x401526 <explode_bomb>
+   0x0000000000401007 <+180>:   mov    $0x0,%eax
+   0x000000000040100c <+185>:   jmp    0x400fc1 <phase_3+110>
+End of assembler dump.
+
+(gdb) run bombdif.txt //running with previous arguments!
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Phase 1 defused. How about the next one?
+That's number 2.  Keep going!
+2 8
+
+Breakpoint 1, 0x0000000000400f53 in phase_3 ()
+(gdb) continue
+Continuing.
+
+Breakpoint 2, 0x0000000000400f70 in phase_3 ()
+(gdb) stepi
+0x0000000000400f73 in phase_3 ()
+(gdb) stepi
+0x0000000000400f75 in phase_3 ()
+(gdb) stepi
+0x0000000000400f7a in phase_3 ()
+(gdb) print *(int *) ($rsp + 12)
+$26 = 2
+(gdb) stepi
+0x0000000000400f80 in phase_3 ()
+(gdb) print /d $rax
+$27 = 2
+(gdb) print *(int *) 0x4024c0
+$28 = 4198290
+(gdb) stepi
+0x0000000000400f84 in phase_3 ()
+(gdb) stepi
+0x0000000000400fd8 in phase_3 ()
+(gdb) kill
+Kill the program being debugged? (y or n) y
+[Inferior 1 (process 1710949) killed]
+(gdb) run bombdif.txt
+Starting program: /home/osbe/bomb-lab/bomb3/bomb bombdif.txt
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Phase 1 defused. How about the next one?
+That's number 2.  Keep going!
+2 580
+
+Breakpoint 1, 0x0000000000400f53 in phase_3 ()
+(gdb) continue
+Continuing.
+
+Breakpoint 2, 0x0000000000400f70 in phase_3 ()
+(gdb) stepi
+0x0000000000400f73 in phase_3 ()
+(gdb) stepi
+0x0000000000400f75 in phase_3 ()
+(gdb) stepi
+0x0000000000400f7a in phase_3 ()
+(gdb) stepi
+0x0000000000400f80 in phase_3 ()
+(gdb) stepi
+0x0000000000400f84 in phase_3 ()
+(gdb) stepi
+0x0000000000400fd8 in phase_3 ()
+(gdb) stepi
+0x0000000000400fdd in phase_3 ()
+(gdb) stepi
+0x0000000000400fa3 in phase_3 ()
+(gdb) stepi
+0x0000000000400fa8 in phase_3 ()
+(gdb) stepi 4
+0x0000000000400fbc in phase_3 ()
+(gdb) stepi
+0x0000000000400fc1 in phase_3 ()
+(gdb) print *(int *) ($rsp + 12)
+$29 = 2
+(gdb) print /d %eax
+A syntax error in expression, near `%eax'.
+(gdb) print /d $eax
+$30 = 580
+(gdb) print *(int *) ($rsp + 8)
+$31 = 580
+(gdb) stepi
+0x0000000000400fc6 in phase_3 ()
+(gdb) stepi
+0x0000000000400fc8 in phase_3 ()
+(gdb) break phase_4
+Breakpoint 3 at 0x401046
+(gdb) stepi
+0x0000000000400fcc in phase_3 ()
+(gdb) stepi
+0x0000000000400fd3 in phase_3 ()
+(gdb) stepi
+0x0000000000400fd7 in phase_3 ()
+(gdb) stepi
+main (argc=<optimized out>, argv=<optimized out>) at bomb.c:90
+90          phase_defused();
+
+//SUCCESS! 
