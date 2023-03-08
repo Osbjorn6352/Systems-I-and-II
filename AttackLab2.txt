@@ -1,0 +1,104 @@
+[osbe@cdmcscspprd01 target17]$ emacs input2.txt
+[osbe@cdmcscspprd01 target17]$ emacs input2.txt
+[osbe@cdmcscspprd01 target17]$ emacs input2.s
+[osbe@cdmcscspprd01 target17]$ gcc -c input2.s
+[osbe@cdmcscspprd01 target17]$ ls
+cookie.txt  farm.c   input2.o  input2.txt   input-raw.txt  input.txt~  rtarget
+ctarget     hex2raw  input2.s  input2.txt~  input.txt      README.txt
+[osbe@cdmcscspprd01 target17]$ objdump -d input2.o
+
+input2.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <.text>:
+   0:   48 c7 c7 56 db eb 76    mov    $0x76ebdb56,%rdi
+   7:   c3                      retq
+[osbe@cdmcscspprd01 target17]$ emacs input2.txt
+[osbe@cdmcscspprd01 target17]$ gdb ctarget
+GNU gdb (GDB) Red Hat Enterprise Linux 8.2-19.0.1.el8
+Copyright (C) 2018 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-redhat-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ctarget...done.
+(gdb) disas getbuf
+Dump of assembler code for function getbuf:
+   0x000000000040188b <+0>:     sub    $0x38,%rsp
+   0x000000000040188f <+4>:     mov    %rsp,%rdi
+   0x0000000000401892 <+7>:     callq  0x401ac3 <Gets>
+   0x0000000000401897 <+12>:    mov    $0x1,%eax
+   0x000000000040189c <+17>:    add    $0x38,%rsp
+   0x00000000004018a0 <+21>:    retq
+End of assembler dump.
+(gdb) break *0x40188f
+Breakpoint 1 at 0x40188f: file buf.c, line 14.
+(gdb) continue
+The program is not being run.
+(gdb) run
+Starting program: /home/osbe/target17/ctarget
+Cookie: 0x76ebdb56
+
+Breakpoint 1, getbuf () at buf.c:14
+14      buf.c: No such file or directory.
+Missing separate debuginfos, use: yum debuginfo-install glibc-2.28-211.0.1.el8.x86_64
+(gdb) x/s $rsp
+0x5561a088:     ""
+(gdb) quit
+A debugging session is active.
+
+        Inferior 1 [process 4110733] will be killed.
+
+Quit anyway? (y or n) y
+[osbe@cdmcscspprd01 target17]$ emacs input2.txt
+[osbe@cdmcscspprd01 target17]$ gdb ctarget
+GNU gdb (GDB) Red Hat Enterprise Linux 8.2-19.0.1.el8
+Copyright (C) 2018 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-redhat-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ctarget...done.
+(gdb) disas touch2
+Dump of assembler code for function touch2:
+   0x00000000004018cd <+0>:     sub    $0x8,%rsp
+   0x00000000004018d1 <+4>:     mov    %edi,%esi
+   0x00000000004018d3 <+6>:     movl   $0x2,0x202c1f(%rip)        # 0x6044fc <vlevel>
+   0x00000000004018dd <+16>:    cmp    %edi,0x202c21(%rip)        # 0x604504 <cookie>
+   0x00000000004018e3 <+22>:    je     0x401908 <touch2+59>
+   0x00000000004018e5 <+24>:    mov    $0x403088,%edi
+   0x00000000004018ea <+29>:    mov    $0x0,%eax
+   0x00000000004018ef <+34>:    callq  0x400d00 <printf@plt>
+   0x00000000004018f4 <+39>:    mov    $0x2,%edi
+   0x00000000004018f9 <+44>:    callq  0x401d68 <fail>
+   0x00000000004018fe <+49>:    mov    $0x0,%edi
+   0x0000000000401903 <+54>:    callq  0x400e40 <exit@plt>
+   0x0000000000401908 <+59>:    mov    $0x403060,%edi
+   0x000000000040190d <+64>:    mov    $0x0,%eax
+   0x0000000000401912 <+69>:    callq  0x400d00 <printf@plt>
+   0x0000000000401917 <+74>:    mov    $0x2,%edi
+   0x000000000040191c <+79>:    callq  0x401cb6 <validate>
+   0x0000000000401921 <+84>:    jmp    0x4018fe <touch2+49>
+End of assembler dump.
+(gdb) quit
+[osbe@cdmcscspprd01 target17]$ emacs input2.txt
