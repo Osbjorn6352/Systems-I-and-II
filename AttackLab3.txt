@@ -1,0 +1,50 @@
+(gdb) disas touch3
+Dump of assembler code for function touch3:
+   0x00000000004019a2 <+0>:     push   %rbx
+   0x00000000004019a3 <+1>:     mov    %rdi,%rbx
+   0x00000000004019a6 <+4>:     movl   $0x3,0x202b4c(%rip)        # 0x6044fc <vlevel>
+   0x00000000004019b0 <+14>:    mov    %rdi,%rsi
+   0x00000000004019b3 <+17>:    mov    0x202b4b(%rip),%edi        # 0x604504 <cookie>
+   0x00000000004019b9 <+23>:    callq  0x401923 <hexmatch>
+   0x00000000004019be <+28>:    test   %eax,%eax
+   0x00000000004019c0 <+30>:    je     0x4019e8 <touch3+70>
+   0x00000000004019c2 <+32>:    mov    %rbx,%rsi
+   0x00000000004019c5 <+35>:    mov    $0x4030b0,%edi
+   0x00000000004019ca <+40>:    mov    $0x0,%eax
+   0x00000000004019cf <+45>:    callq  0x400d00 <printf@plt>
+   0x00000000004019d4 <+50>:    mov    $0x3,%edi
+   0x00000000004019d9 <+55>:    callq  0x401cb6 <validate>
+   0x00000000004019de <+60>:    mov    $0x0,%edi
+   0x00000000004019e3 <+65>:    callq  0x400e40 <exit@plt>
+   0x00000000004019e8 <+70>:    mov    %rbx,%rsi
+   0x00000000004019eb <+73>:    mov    $0x4030d8,%edi
+   0x00000000004019f0 <+78>:    mov    $0x0,%eax
+   0x00000000004019f5 <+83>:    callq  0x400d00 <printf@plt>
+   0x00000000004019fa <+88>:    mov    $0x3,%edi
+   0x00000000004019ff <+93>:    callq  0x401d68 <fail>
+   0x0000000000401a04 <+98>:    jmp    0x4019de <touch3+60>
+End of assembler dump.
+(gdb) quit
+[osbe@cdmcscspprd01 target17]$ emacs input3.s
+[osbe@cdmcscspprd01 target17]$ emacs input3.txt
+[osbe@cdmcscspprd01 target17]$ emacs input3.s
+[osbe@cdmcscspprd01 target17]$ emacs input3.txt
+[osbe@cdmcscspprd01 target17]$ emacs input2.txt
+[osbe@cdmcscspprd01 target17]$ emacs input3.txt
+[osbe@cdmcscspprd01 target17]$ gcc -c input3.s
+[osbe@cdmcscspprd01 target17]$ ls
+cookie.txt  hex2raw         input2.s    input2.txt~  input3.s~    input-raw.txt  README.txt
+ctarget     input2.o        input2.s~   input3.o     input3.txt   input.txt      rtarget
+farm.c      input2-raw.txt  input2.txt  input3.s     input3.txt~  input.txt~
+[osbe@cdmcscspprd01 target17]$ objdump -d input3.o
+
+input3.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <.text>:
+   0:   48 c7 07 56 db eb 76    movq   $0x76ebdb56,(%rdi)
+   7:   68 a2 19 40 00          pushq  $0x4019a2
+   c:   c3                      retq
+[osbe@cdmcscspprd01 target17]$ emacs input3.txt
